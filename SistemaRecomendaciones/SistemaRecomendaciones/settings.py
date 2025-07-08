@@ -116,8 +116,8 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DB_NAME', 'bddRecomendacionesVM_prod'),
-            'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'password_servidor'),
+            'USER': os.environ.get('DB_USER', 'tesisuser'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'tesispass123'),
             'HOST': os.environ.get('DB_HOST', 'localhost'),
             'PORT': os.environ.get('DB_PORT', '5432'),
             'OPTIONS': {
