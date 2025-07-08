@@ -66,3 +66,8 @@ staticfiles/
 *.idea/
 *.iml
 .history
+
+# =====================
+google_config.py
+credenciales-drive.json
+*.json

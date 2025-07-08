@@ -1,24 +1,22 @@
 from datetime import timedelta
 from pathlib import Path
 import os
-import dj_database_url  # ✅ Importante para Heroku DATABASE_URL
 
 # Rutas base
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Seguridad
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'fallback-secret-key')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = 'tu-secret-key-aqui'  # Cambia por tu SECRET_KEY real
+DEBUG = True  # Cambiar a False en producción
 ALLOWED_HOSTS = [
-    'apisound-bd202b4fd327.herokuapp.com',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    'tu-servidor-ip-aqui'  # Agrega la IP de tu servidor AlmaLinux
 ]
 
 # Archivos estáticos y media
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -51,7 +49,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ WhiteNoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,7 +89,7 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
-# Seguridad básica (puedes mejorar en producción)
+# Seguridad básica
 SECURE_SSL_REDIRECT = False
 SECURE_HSTS_SECONDS = 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
@@ -122,7 +119,7 @@ TEMPLATES = [
     },
 ]
 
-# Base de datos por defecto (para local)
+# Base de datos
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -133,11 +130,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
-# ✅ Reemplazar config local si Heroku proporciona DATABASE_URL
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
 
 # Validadores de contraseña
 AUTH_PASSWORD_VALIDATORS = [
@@ -155,11 +147,16 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Importar credenciales de Google Drive desde archivo separado
+from .google_config import GOOGLE_DRIVE_CREDENTIALS
+
 # Configuración de Google Drive Storage
 DEFAULT_FILE_STORAGE = 'django_googledrive_storage.GoogleDriveStorage'
 
-GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = os.path.join(BASE_DIR, 'credenciales-drive.json')  # Ruta a tu archivo descargado
-GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = 'media/'
-GOOGLE_DRIVE_STORAGE_FILE_PERMISSIONS = 'anyoneWithLink' # Permisos para los archivos subidos
-GOOGLE_DRIVE_STORAGE_MEDIA_FOLDER = '1Js7WVSK615274-txr1ozffwuU287k6ic'  # ID de la carpeta en Drive donde se guardarán los archivos
+# Configuración usando archivo separado
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = None
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS = GOOGLE_DRIVE_CREDENTIALS
 
+GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = 'media/'
+GOOGLE_DRIVE_STORAGE_FILE_PERMISSIONS = 'anyoneWithLink'
+GOOGLE_DRIVE_STORAGE_MEDIA_FOLDER = '1Js7WVSK615274-txr1ozffwuU287k6ic'
