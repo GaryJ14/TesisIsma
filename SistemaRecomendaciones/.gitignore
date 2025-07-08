@@ -1,0 +1,68 @@
+# =====================
+# 🔒 Seguridad y entornos
+# =====================
+.env
+*.env
+.env.*
+
+# =====================
+# 🐍 Python & Django
+# =====================
+*.py[cod]
+__pycache__/
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+
+# Archivos de migraciones vacíos o antiguos
+**/migrations/*.pyc
+**/migrations/__pycache__/
+!**/migrations/*.py 
+
+# =====================
+# 📦 Entornos virtuales
+# =====================
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# =====================
+# 📁 Archivos multimedia y datos
+# =====================
+media/
+staticfiles/
+*.mp3
+*.mp4
+*.avi
+*.mov
+*.flv
+*.wav
+
+# =====================
+# 🧠 Archivos de caché / temporales
+# =====================
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# =====================
+# 🧩 VS Code
+# =====================
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# =====================
+# 🛠️ Otros
+# =====================
+*.DS_Store
+*.idea/
+*.iml
+.history
