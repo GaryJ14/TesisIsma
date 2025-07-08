@@ -17,19 +17,24 @@ from Backend.WantMusic.Contenido.domain.entities.contenido_model import Contenid
 
 class ContenidoAdapter:
 
-    def subir_a_drive_y_obtener_url_publica(self,archivo):
-        # 1. Autenticación con credenciales del JSON
+    def subir_a_drive_y_obtener_url_publica(self, archivo):
+        # 1. Autenticación con credenciales desde settings
         SCOPES = ['https://www.googleapis.com/auth/drive']
-        credentials = service_account.Credentials.from_service_account_file('credenciales-drive.json', scopes=SCOPES
+        
+        # Usar las credenciales desde settings.py en lugar del archivo JSON
+        credentials = service_account.Credentials.from_service_account_info(
+            settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS,
+            scopes=SCOPES
         )
+        
         service = build('drive', 'v3', credentials=credentials)
-
+        
         # 2. Crear metadatos para el archivo
         file_metadata = {
             'name': archivo.name,
-            'parents': ['1Js7WVSK615274-txr1ozffwuU287k6ic']  # Opcional
+            'parents': [settings.GOOGLE_DRIVE_STORAGE_MEDIA_FOLDER]  # Usar desde settings
         }
-
+        
         # 3. Subida del archivo
         media = MediaIoBaseUpload(io.BytesIO(archivo.read()), mimetype=archivo.content_type)
         uploaded_file = service.files().create(
@@ -37,16 +42,16 @@ class ContenidoAdapter:
             media_body=media,
             fields='id'
         ).execute()
-
+        
         # 4. Obtener file_id
         file_id = uploaded_file.get('id')
-
+        
         # 5. Hacer público el archivo
         service.permissions().create(
             fileId=file_id,
             body={'type': 'anyone', 'role': 'reader'}
         ).execute()
-
+        
         # 6. Retornar la URL pública
         return f"https://drive.google.com/uc?id={file_id}"
     
