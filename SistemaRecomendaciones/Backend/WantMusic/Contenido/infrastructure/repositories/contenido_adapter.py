@@ -54,7 +54,7 @@ class ContenidoAdapter:
         
         # 6. Retornar la URL pública
         return f"https://drive.google.com/uc?id={file_id}"
-    
+        
     def construir_url_directa(self,drive_url):
         import re
         match = re.search(r'/d/([a-zA-Z0-9_-]+)', drive_url)
