@@ -197,43 +197,11 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
-# ============================================
-# GOOGLE DRIVE STORAGE CONFIGURATION
-# ============================================
-# Configuración de Google Drive Storage
-DEFAULT_FILE_STORAGE = 'django_googledrive_storage.GoogleDriveStorage'
 
-# Importar credenciales de Google Drive desde archivo separado
-try:
-    from .google_config import GOOGLE_DRIVE_CREDENTIALS
-    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = None
-    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS = GOOGLE_DRIVE_CREDENTIALS
-    
-    # Configuraciones de Google Drive
-    GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = 'media/'
-    GOOGLE_DRIVE_STORAGE_FILE_PERMISSIONS = 'anyoneWithLink'
-    GOOGLE_DRIVE_STORAGE_MEDIA_FOLDER = '1Js7WVSK615274-txr1ozffwuU287k6ic'
-    
-    if ENVIRONMENT == 'development':
-        print("✅ Google Drive configurado correctamente para DESARROLLO")
-    else:
-        print("✅ Google Drive configurado correctamente para PRODUCCIÓN")
-        
-except ImportError:
-    # Fallback si no existe google_config.py
-    print("⚠️  Advertencia: No se encontró google_config.py")
-    print("   Google Drive Storage no funcionará. Crea el archivo google_config.py")
-    
-    # Configuración de fallback para archivos locales
-    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = None
-    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS = {}
-    
-    # Si no hay Google Drive, usar almacenamiento local
-    if ENVIRONMENT == 'development':
-        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    else:
-        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
+# ============================================
+# ALMACENAMIENTO LOCAL DE ARCHIVOS
+# ============================================
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 # ============================================
 # CONFIGURACIÓN BÁSICA
 # ============================================
