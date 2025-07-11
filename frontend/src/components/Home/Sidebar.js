@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaSearch, FaBook, FaPlus, FaHeart, FaDownload } from 'react-icons/fa';
+import { FaHome, FaSearch, FaBook, FaHeart, FaFileUpload, FaPlay } from 'react-icons/fa';
 import { Link } from 'react-router-dom';  // Importamos Link para redirigir
 
 const Sidebar = () => {
@@ -10,9 +10,9 @@ const Sidebar = () => {
         <SidebarItem icon={<FaHome />} text="Home" to="/Home" />
         <SidebarItem icon={<FaSearch />} text="Search" to="/BusquedaPage" />  {/* Redirige a /busqueda */}
         <SidebarItem icon={<FaBook />} text="Tu Historial" to="/HistorialPage" />
-        <SidebarItem icon={<FaPlus />} text="Create Playlist" />
+        <SidebarItem icon={<FaPlay />} text=" Tu Contenido" to="/MisContenidos" />
         <SidebarItem icon={<FaHeart />} text="Liked Songs" to="/FavoritosPage" />
-        <SidebarItem icon={<FaDownload />} text="Downloaded" />
+        <SidebarItem icon={<FaFileUpload />} text="Subir Contenido" to="/SubirContenido" />
       </ul>
     </div>
   );
