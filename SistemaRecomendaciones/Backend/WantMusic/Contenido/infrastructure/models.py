@@ -14,7 +14,7 @@ class Contenido(models.Model):
 
     titulo = models.CharField(max_length=255)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
-    archivo = models.URLField(max_length=800, null=True, blank=True)
+    archivo = models.FileField(upload_to=ruta_personalizada)
     fecha_subida = models.DateTimeField(auto_now_add=True)
 
     subido_por_id = models.IntegerField(null=True, blank=True)

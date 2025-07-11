@@ -39,29 +39,15 @@ class ContenidoSerializer(serializers.ModelSerializer):
     def get_archivo(self, obj):
         request = self.context.get('request')
         archivo = getattr(obj, 'archivo', None)
-
         if archivo:
-            # Si es un objeto FileField o similar:
-            if hasattr(archivo, 'url'):
-                url = archivo.url
-            else:
-                # Asumimos que archivo es string con ruta o URL
-                url = str(archivo)
+            # Evita doble /media/
+            archivo = str(archivo)
+            if archivo.startswith('/media/'):
+                archivo = archivo[7:]
+            elif archivo.startswith('media/'):
+                archivo = archivo[6:]
 
-            # Construimos URL completa si es ruta relativa
-            if not url.startswith('http'):
-                # Evitar doble /media/
-                if url.startswith('/media/'):
-                    url = url[7:]
-                elif url.startswith('media/'):
-                    url = url[6:]
-
-                if request:
-                    return request.build_absolute_uri(f'/media/{url}')
-                return f'/media/{url}'
-
-            return url
-
+            return request.build_absolute_uri(f'/media/{archivo}') if request else f'/media/{archivo}'
         return None
 
 

@@ -7,6 +7,8 @@ urlpatterns = [
     path('contenidos/crear/', CrearContenidoView.as_view(), name='crear_contenido'),
     path('contenidos/actualizar/<int:pk>/', ActualizarContenidoView.as_view(), name='actualizar_contenido'),
     path('contenidos/eliminar/<int:pk>/', EliminarContenidoView.as_view(), name='eliminar_contenido'),
+    path('contenidos/mis-contenidos/', ContenidosPorUsuarioView.as_view(), name='mis-contenidos'),
+    
     
     
     

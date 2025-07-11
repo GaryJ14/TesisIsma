@@ -1,4 +1,3 @@
-import traceback
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser  
@@ -41,20 +40,6 @@ class CrearContenidoView(BaseContenidoView):
             return Response(ContenidoSerializer(contenido, context={'request': request}).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = ContenidoSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                datos = serializer.validated_data
-                datos['subido_por_id'] = request.user
-                archivo = request.FILES.get('archivo')
-                contenido = self.servicio.crear_contenido_con_etiquetas(datos, archivo)
-                return Response(ContenidoSerializer(contenido, context={'request': request}).data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                print("❌ ERROR AL CREAR CONTENIDO:", e)
-                traceback.print_exc()
-                return Response({"error": str(e)}, status=500)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListarContenidoView(BaseContenidoView):
     def get(self, request):
@@ -63,6 +48,18 @@ class ListarContenidoView(BaseContenidoView):
         return Response(serializer.data)
 
 
+class ContenidosPorUsuarioView(BaseContenidoView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            usuario_id = request.user.id
+            contenidos = self.servicio.listar_contenidos_por_usuario(usuario_id)
+            serializer = ContenidoSerializer(contenidos, many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 class ActualizarContenidoView(BaseContenidoView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]

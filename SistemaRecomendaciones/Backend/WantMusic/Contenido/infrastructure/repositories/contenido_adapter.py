@@ -5,64 +5,12 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.utils import timezone
 
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-import io
-
 from Backend.WantMusic.Contenido.infrastructure.models import Contenido as ContenidoModel
 from Backend.WantAdministrator.ContenidoEliminado.infrastructure.models import ContenidoEliminado
 from Backend.WantMusic.Contenido.domain.entities.contenido_model import Contenido as ContenidoDominio
 
 
 class ContenidoAdapter:
-
-    def subir_a_drive_y_obtener_url_publica(self, archivo):
-        # 1. Autenticación con credenciales desde settings
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-        
-        # Usar las credenciales desde settings.py en lugar del archivo JSON
-        credentials = service_account.Credentials.from_service_account_info(
-            settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS,
-            scopes=SCOPES
-        )
-        
-        service = build('drive', 'v3', credentials=credentials)
-        
-        # 2. Crear metadatos para el archivo
-        file_metadata = {
-            'name': archivo.name,
-            'parents': [settings.GOOGLE_DRIVE_STORAGE_MEDIA_FOLDER]  # Usar desde settings
-        }
-        
-        # 3. Subida del archivo
-        media = MediaIoBaseUpload(io.BytesIO(archivo.read()), mimetype=archivo.content_type)
-        uploaded_file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-        
-        # 4. Obtener file_id
-        file_id = uploaded_file.get('id')
-        
-        # 5. Hacer público el archivo
-        service.permissions().create(
-            fileId=file_id,
-            body={'type': 'anyone', 'role': 'reader'}
-        ).execute()
-        
-        # 6. Retornar la URL pública
-        return f"https://drive.google.com/uc?id={file_id}"
-        
-    def construir_url_directa(self,drive_url):
-        import re
-        match = re.search(r'/d/([a-zA-Z0-9_-]+)', drive_url)
-        if match:
-            file_id = match.group(1)
-            return f"https://docs.google.com/uc?export=download&id={file_id}"
-        return drive_url  # fallback si no coincide
-
 
     def guardar(self, contenido_dominio: ContenidoDominio, archivo=None) -> ContenidoDominio:
         if contenido_dominio.id:
@@ -80,11 +28,7 @@ class ContenidoAdapter:
         contenido_model.eliminado = contenido_dominio.eliminado
 
         if archivo:
-            # 👉 Subir a Google Drive y guardar la URL
-            url_publica = self.subir_a_drive_y_obtener_url_publica(archivo)
-            url_reproducible = self.construir_url_directa(url_publica)
-            contenido_model.archivo = url_reproducible
-            contenido_model.archivo = url_publica  # 👈 campo tipo CharField o URLField
+            contenido_model.archivo = archivo
 
         contenido_model.save()
 
@@ -123,7 +67,9 @@ class ContenidoAdapter:
     def listar_todos(self) -> List[ContenidoDominio]:
         modelos = ContenidoModel.objects.filter(eliminado=False)
         return [self._mapear_a_entidad(m) for m in modelos]
-
+    def listar_por_usuario(self, usuario_id: int) -> List[ContenidoDominio]:
+        modelos = ContenidoModel.objects.filter(subido_por_id=usuario_id, eliminado=False).order_by('-fecha_subida')
+        return [self._mapear_a_entidad(m) for m in modelos]
     def listar_por_tipo(self, tipo: str) -> List[ContenidoDominio]:
         return [
             self._mapear_a_entidad(c)
@@ -180,7 +126,7 @@ class ContenidoAdapter:
             id=contenido_model.id,
             titulo=contenido_model.titulo,
             tipo=contenido_model.tipo,
-            archivo=contenido_model.archivo if contenido_model.archivo else '',
+            archivo=contenido_model.archivo.url if contenido_model.archivo else '',
             subido_por_id=contenido_model.subido_por_id,
             artista=contenido_model.artista,
             fecha_subida=contenido_model.fecha_subida,

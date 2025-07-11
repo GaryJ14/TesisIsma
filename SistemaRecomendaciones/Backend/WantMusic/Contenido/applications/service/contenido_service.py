@@ -76,7 +76,16 @@ class ContenidoServicio:
             else:
                 contenido.subido_por_nombre = 'Anónimo'
         return contenidos
+    def listar_contenidos_por_usuario(self, usuario_id: int):
+        contenidos = self.contenido_repo.listar_por_usuario(usuario_id)  # usa el método que agregaste al adapter
 
+        for contenido in contenidos:
+            contenido.etiquetas = self.repositorio_relacion.obtener_etiquetas_por_contenido(contenido.id)
+
+            usuario = self.usuario_repo.obtener_por_id(contenido.subido_por_id)
+            contenido.subido_por_nombre = usuario.nombre if usuario else 'Anónimo'
+
+        return contenidos
     def obtener_contenido(self, contenido_id):
         contenido = self.contenido_repo.obtener_por_id(contenido_id)
         contenido.etiquetas = self.repositorio_relacion.obtener_etiquetas_por_contenido(contenido.id)
