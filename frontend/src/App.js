@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { SearchProvider } from './context/SearchContext';  // Importa el SearchProvider
-import { PlayerProvider } from './context/PlayerContext';  // Importa el PlayerProvider
+import { SearchProvider } from './context/SearchContext';  
+import { PlayerProvider } from './context/PlayerContext';  
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SignInSide from "./pages/SignInSide";
 import SignUp from "./pages/SignUp";
@@ -17,7 +17,9 @@ import BusquedaPage from './pages/Busqueda';
 import FavoritosPage from './pages/Favoritos';
 import HistorialPage from './pages/Historial';
 import PerfilPage from './pages/Perfil';
-import Player from './components/Home/Player';  // Asegúrate de importar el Player
+import SubirContenidoPage from './pages/SubirContenido';
+import Player from './components/Home/Player';
+import ContenidoCliente from './pages/ContenidoCliente';
 
 function App() {
   return (
@@ -75,6 +77,14 @@ function App() {
               path="/PerfilPage"
               element={<PrivateRoute element={<PerfilPage />} />}
             />
+            <Route
+              path="/SubirContenido"
+              element={<PrivateRoute element={<SubirContenidoPage />} />}
+            />
+            <Route
+              path="/MisContenidos"
+              element={<PrivateRoute element={<ContenidoCliente />} />}
+            />
           </Routes>
         </BrowserRouter>
       </SearchProvider>
@@ -85,7 +95,7 @@ function App() {
 const ConditionalPlayer = () => {
   const location = useLocation();
   // Lista de rutas donde el reproductor debe ser visible
-  const playerRoutes = ['/Home', '/BusquedaPage', '/FavoritosPage', '/HistorialPage', '/PerfilPage'];
+  const playerRoutes = ['/Home', '/BusquedaPage', '/FavoritosPage', '/HistorialPage', '/PerfilPage', '/SubirContenido', '/MisContenidos'];
 
   if (playerRoutes.includes(location.pathname)) {
     return <Player />;
